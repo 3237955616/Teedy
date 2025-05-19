@@ -30,3 +30,33 @@
     <div ui-view="user"></div>
   </div>
 </div>
+
+<h3>Pending Registrations</h3>
+<div ng-if="pendingRegistrations.length === 0">
+    No pending registration requests.
+</div>
+<table class="table table-striped" ng-if="pendingRegistrations.length > 0">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="user in pendingRegistrations">
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.createDate | date:'medium' }}</td>
+            <td>
+                <button class="btn btn-success btn-xs" ng-click="approveRegistration(user.id)">
+                    <span class="fas fa-check"></span> Approve
+                </button>
+                <button class="btn btn-danger btn-xs" ng-click="rejectRegistration(user.id)">
+                    <span class="fas fa-times"></span> Reject
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
