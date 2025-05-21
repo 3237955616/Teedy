@@ -75,4 +75,19 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
       });
     });
   };
+
+  $scope.openRegister = function () {
+    console.log('openRegister');
+    $uibModal.open({
+      templateUrl: 'partial/docs/register.html',
+      controller: 'Register'
+    }).result.then(function (username) {
+      if (username === null) {
+        return;
+      }
+      console.log('Username:', username);
+    }).catch(function (error) {
+      console.error('Modal failed to open:', error);
+    });
+  };
 });
