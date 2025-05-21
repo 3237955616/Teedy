@@ -3,9 +3,132 @@
 /**
  * Document view content controller.
  */
-angular.module('docs').controller('DocumentViewContent', function ($scope, $rootScope, $stateParams, Restangular, $dialog, $state, Upload, $translate, $uibModal) {
+angular.module('docs').controller('DocumentViewContent', function ($scope, $rootScope, $stateParams, Restangular, $dialog, $state, Upload, $translate, $uibModal, $sce) {
   $scope.displayMode = _.isUndefined(localStorage.fileDisplayMode) ? 'grid' : localStorage.fileDisplayMode;
   $scope.openedFile = undefined;
+
+  // 初始化翻译字典
+  $scope.translationDict = {
+    '你好': 'Hello',
+    '早上好': 'Good morning',
+    '下午好': 'Good afternoon',
+    '晚上好': 'Good evening',
+    '晚安': 'Good night',
+    '再见': 'Goodbye',
+    '很高兴见到你': 'Nice to meet you',
+    '最近怎么样': 'How are you doing',
+    '一切都好吗': 'How’s everything',
+    '好久不见': 'Long time no see',
+    '谢谢': 'Thank you',
+    '非常感谢': 'Thank you very much',
+    '不用谢': 'You’re welcome',
+    '对不起': 'Sorry',
+    '抱歉': 'Apologize',
+    '没关系': 'It’s okay',
+    '请原谅我': 'Forgive me, please',
+    '请问': 'Excuse me',
+    '请': 'Please',
+    '打扰一下': 'Excuse me',
+    '什么': 'What',
+    '哪里': 'Where',
+    '什么时候': 'When',
+    '为什么': 'Why',
+    '如何': 'How',
+    '谁': 'Who',
+    '多少': 'How many',
+    '多少钱': 'How much',
+    '是': 'Yes',
+    '不是': 'No',
+    '好的': 'Okay',
+    '可以': 'Can',
+    '帮助': 'Help',
+    '麻烦': 'Trouble',
+    '喜欢': 'Like',
+    '讨厌': 'Hate',
+    '饿了': 'Hungry',
+    '渴了': 'Thirsty',
+    '累了': 'Tired',
+    '你叫什么名字': 'What’s your name',
+    '我叫李明': 'My name is Li Ming',
+    '你来自哪里': 'Where are you from',
+    '我来自中国': 'I’m from China',
+    '你会说中文吗': 'Can you speak Chinese',
+    '我会说一点英文': 'I can speak a little English',
+    '请重复一遍': 'Please repeat that',
+    '请说得慢一点': 'Please speak slowly',
+    '这是什么': 'What’s this',
+    '那多少钱': 'How much is that',
+    '我想要一杯咖啡': 'I’d like a cup of coffee',
+    '请给我账单': 'Please give me the bill',
+    '祝你好运': 'Good luck',
+    '生日快乐': 'Happy birthday',
+    '恭喜': 'Congratulations',
+    '机场': 'Airport',
+    '酒店': 'Hotel',
+    '餐厅': 'Restaurant',
+    '医院': 'Hospital',
+    '洗手间在哪里': 'Where is the restroom',
+    '地铁站': 'Subway station',
+    '公交站': 'Bus stop',
+    '警察局': 'Police station'
+  };
+
+  /**
+   * 翻译文本函数
+   */
+  $scope.translateText = function(text) {
+    if (!text) return '';
+    
+    // 首先尝试使用 $translate 服务进行整段翻译
+    let translated = $translate.instant(text);
+    
+    // 如果 $translate 没有翻译结果，则使用本地字典进行逐词翻译
+    if (translated === text) {
+      // 按中文词语和非中文内容分割文本
+      const segments = text.split(/([\u4e00-\u9fa5]+)/);
+      
+      // 对每个中文词语进行翻译
+      translated = segments.map(segment => {
+        // 如果是中文词语，尝试从字典翻译
+        if (/[\u4e00-\u9fa5]/.test(segment)) {
+          // 尝试查找最长匹配
+          let result = '';
+          let i = 0;
+          
+          while (i < segment.length) {
+            let maxMatch = '';
+            
+            // 查找从i开始的最长匹配词
+            for (let j = segment.length; j > i; j--) {
+              const substr = segment.substring(i, j);
+              if ($scope.translationDict[substr]) {
+                maxMatch = substr;
+                break;
+              }
+            }
+            
+            // 如果找到匹配，添加翻译并移动指针
+            if (maxMatch) {
+              result += $scope.translationDict[maxMatch];
+              i += maxMatch.length;
+            } else {
+              // 没找到匹配，添加原文
+              result += segment[i];
+              i++;
+            }
+          }
+          
+          return result;
+        }
+        
+        // 如果不是中文，直接返回
+        return segment;
+      }).join('');
+    }
+    
+    // 信任HTML内容
+    return $sce.trustAsHtml(translated);
+  };
 
   /**
    * Watch for display mode change.
