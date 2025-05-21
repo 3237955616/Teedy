@@ -103,7 +103,7 @@ public class UserResource extends BaseResource {
         user.setStorageQuota(storageQuota);
         user.setOnboarding(true);
 
-        // Create the user
+        // Create the userDao
         UserDao userDao = new UserDao();
         try {
             userDao.create(user, principal.getId());
