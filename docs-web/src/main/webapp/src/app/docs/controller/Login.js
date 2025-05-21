@@ -75,24 +75,4 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
       });
     });
   };
-
-  $scope.showRegistrationForm = true;
-  $scope.registrationData = {};
-  
-  $scope.registerUser = function() {
-      // Validate form
-      if (!$scope.registrationData.username || !$scope.registrationData.password || !$scope.registrationData.email) {
-          alert('Please fill in all required fields');
-          return;
-      }
-      
-      $http.post('/api/registration', $scope.registrationData)
-          .success(function(response) {
-            alert('Registration request submitted successfully!');
-              $scope.showRegistrationForm = false;
-          })
-          .error(function(error) {
-              alert('Registration failed: ' + (error.message || 'Unknown error'));
-          });
-  };
 });

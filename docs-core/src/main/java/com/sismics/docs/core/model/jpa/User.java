@@ -60,12 +60,6 @@ public class User implements Loggable {
     private String totpKey;
     
     /**
-     * Registration status (PENDING, APPROVED).
-     */
-    @Column(name = "USE_STATUS_C", nullable = false, length = 20)
-    private String status;
-
-    /**
      * Email address.
      */
     @Column(name = "USE_EMAIL_C", nullable = false, length = 100)
